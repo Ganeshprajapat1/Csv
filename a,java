@@ -1,0 +1,47 @@
+public class Wordcount{
+    public static class Map extends Mapper<LongWritable,Text,Text,IntWritable>{
+        public void map(LongWritable Key,Text Value,Context context)throws IOException,InterruptedException{
+            String data=value.toString();
+            StringTokenizer token=new StringTokenizer(data);
+            while(token.hasMoreTokens()){
+                value.set(token.nexttoken());
+                context.write(value,new IntWritable(1));
+            }
+        }
+    }
+public static class Reduce extends Reducer<Text,IntWritable,Text,IntWritable>{
+    public void Reduce(Text Key,Iterable<IntWritable> values,Context context)throws IOException,InterruptedException{
+        int sum=0;
+        for(IntWritable i:values){
+            sum+=i.get();
+        }
+        context.write(Key,new IntWritable(sum));
+    }
+}
+public static void main(String args[]) throws Exception{
+    Configuration conf=new Configuration();
+    Job job=job.getInstance(conf);
+
+    job.setJarByClass(Wordcount.class);
+    job.setMapperClass(Map.class);
+    job.setReducerClass(Reduce.class);
+
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(IntWritable.class);
+
+    job.setOutputKeyClass(IntWritable.class);
+    job.setOutputValueClass(IntWritable.class);
+
+    job.setInputFormatClass(TextInputFormat.class);
+    job.setOutputFormatClass(TextInputFormat.class);
+
+    Path OutputPath=new Path(args[1]);
+    FileInputFormat.addInputPath(job,new Path(args[0]));
+    FileOutputFormat.addOutputPath(job,new path(args[0]));
+    
+    outputPath.getFileSystem(conf).delete(outputpath,true);
+    System.exit(job.waitForCompletion(true)?0:1);
+}}
+
+
+
